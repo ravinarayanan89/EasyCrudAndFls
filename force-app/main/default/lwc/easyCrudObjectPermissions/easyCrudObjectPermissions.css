@@ -1,0 +1,16 @@
+.modified-row{
+    background : #1b96ff!important;
+}
+tbody {
+    display: block;
+    max-height:54vh;
+    overflow: auto;
+}
+.lgc-bg {
+    background-color: rgb(242, 242, 242);
+}
+thead, tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;/* even columns width , fix width of table too*/
+}

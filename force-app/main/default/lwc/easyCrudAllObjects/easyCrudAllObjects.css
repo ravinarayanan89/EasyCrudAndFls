@@ -1,0 +1,16 @@
+tbody {
+    display: block;
+    max-height:67vh;
+    overflow: auto;
+}
+thead, tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;/* even columns width , fix width of table too*/
+}
+
+.custom-table{
+    border : var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,rgb(221, 219, 218));
+    -webkit-transition: all .3s ease;
+    transition: all .3s ease;
+}

@@ -1,0 +1,206 @@
+<!--
+  @description       : Field Permissions for the specific Object.
+  @author            : ravi0389@gmail.com
+  @group             : 
+  @last modified on  : 11-24-2021
+  @last modified by  : ravi0389@gmail.com
+-->
+<template>
+  <div class="slds-modal slds-fade-in-open slds-modal_large slds-backdrop">
+      <div class="slds-modal__container">
+        <!-- Header -->
+        <div class="slds-modal__header">
+          <lightning-button-icon icon-name="utility:close" alternative-text="Close this window" size="large"
+            variant="bare-inverse" onclick={closeAction} class="slds-modal__close">
+          </lightning-button-icon>
+          <h2>Field Permissions for {sObjectName} <template if:true = {fieldName}> - {fieldName} </template>
+            <!-- Export CSV Option -->
+            <div class="slds-float--right" if:true = {fieldName}> 
+              <lightning-button icon-name="utility:download" variant="brand" label="Export"
+              onclick = {downloadCSVFile}></lightning-button>
+            </div>
+            <!-- End CSV Export -->
+        </h2>
+        </div>
+        <!-- End Header -->
+
+        <div class="slds-modal__content slds-p-left_medium slds-p-right_medium"
+          style="min-height:71vh;max-height:71vh;overflow-y:auto;">
+          <div class="slds-is-relative">
+            <!-- Display Spinner and the current Status Message -->
+            <template if:true={isLoading}>
+              <div class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative" role="alert">
+                  <span class="slds-assistive-text">Loading</span>
+                  <div class="slds-spinner__dot-a"></div>
+                  <div class="slds-spinner__dot-b"></div>
+                  <div style="transform: translate(-32%, -50%) rotate(-90deg);width: 320px;text-align: center;">
+                    <div class="slds-p-top_large">
+                      {status}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End Spinner -->
+            </template>
+  
+            <lightning-layout horizontal-align="space">
+              <!-- All Fields for the Specific Object -->
+              <lightning-layout-item padding="around-small" size="4">
+                <div class="slds-m-bottom_small slds-m-top_small slds-m-left_small slds-m-right_small">
+                  <lightning-input type="search" data-field="searchKey" label="Quick Find"
+                    placeholder="Search .." onchange={handleFieldApiSearch}></lightning-input>
+                </div>
+                <div class="slds-border_top slds-m-around_x-small"></div>
+                <div class="slds-m-bottom_small slds-m-top_medium slds-m-left_small slds-m-right_small">
+                  <div class="slds-nav-vertical__section" style="min-height:57vh;max-height:57vh;overflow-y:auto;">
+                    <div>
+                      <fieldset class="slds-nav-vertical slds-nav-vertical_compact">
+                        <legend class="slds-nav-vertical__title">All Fields</legend>
+                        <template for:each = {allFields} for:item = "field">
+                            <span key = {field.fieldApi} if:true = {field.isVisible} class="slds-nav-vertical__item" data-field = {field.fieldApi} onclick = {fetchPermissions}>
+                              <input type="radio" value="unique-id-02-created-by-me" name="unique-id-compact" checked = {field.checked}/>
+                              <label class="slds-nav-vertical__action" for="unique-id-02-created-by-me">
+                                <span class="slds-nav-vertical_radio-faux">{field.fieldLabel} ({field.fieldApi})</span>
+                              </label>
+                            </span>
+                        </template>
+                        </fieldset>
+                        </div>
+                  </div>
+                </div>
+              </lightning-layout-item>
+              <!-- End Fields-->
+            
+              <!-- Field Permissions (Read and Edit )-->
+              <lightning-layout-item padding="around-small" size="8">
+                
+                <div class = "slds-border_left">
+                <div class="slds-m-bottom_small slds-m-top_small slds-m-left_small slds-m-right_small">
+                  <lightning-input type="search" data-field="searchKey" label="Enter Profile Name to Search.."
+                    placeholder="Search .." onchange={handleFieldSearch}></lightning-input>
+                </div>
+        
+                <div class="slds-border_top slds-m-around_x-small"></div>
+  
+                <div class="slds-m-bottom_small slds-m-top_medium slds-m-left_small slds-m-right_small slds-is-relative"
+                style="min-height: 400px;">
+                  <template if:true={isFieldsLoading}>
+                    <div class="slds-spinner_container">
+                      <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative" role="alert">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                        <div style="transform: translate(-32%, -50%) rotate(-90deg);width: 320px;text-align: center;">
+                          <div class="slds-p-top_large">
+                            {status}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </template> 
+     
+                  <!-- FLS PERMISSIONS GOES HERE -->
+                  <table class="slds-no-row-hover slds-table slds-table_bordered slds-border_left slds-border_right">
+                    <thead>
+                      <tr class="slds-line-height_reset" style="line-height:30px;">
+                        <th class="" scope="col" style="width:50%;">
+                          <div class="slds-cell-wrap" title="PermissionSet"> Profile/Permission Set</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-cell-wrap" title="Read">
+                            <div class="slds-grid">
+                              <div class="slds-col">
+                                <lightning-input type="checkbox" name="PermissionsRead" checked = {PermissionsRead} onchange={handleSelectAll}></lightning-input>
+                              </div>
+                              <div class="slds-col">
+                                Read 
+                              </div>
+                            </div>
+                            </div>
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-cell-wrap" title="Edit">
+                            <div class="slds-grid">
+                                <div class="slds-col">
+                                  <lightning-input type="checkbox" name="PermissionsEdit"  checked = {PermissionsEdit} onchange={handleSelectAll}></lightning-input>
+                                </div>
+                                <div class="slds-col">
+                                  Edit
+                                </div>
+                            </div>
+                            </div>
+                        </th>
+                        <th class="" scope="col" if:true = {showStatus} style="width:30%;">
+                          <div class="slds-cell-wrap" title="Modify">Status</div>
+                        </th>
+                      </tr>
+                    </thead>
+  
+                    <tbody>
+                      <template for:each={modifiedFlsPermissions} for:item="permission" for:index="index">
+                        <!-- isVisible controls the visibility of records in table -->
+                        <tr if:true={permission.isVisible} class={permission.class} key={permission.ParentId}
+                          style="line-height:25px;">
+                          <td style="width:50%;">
+                            <div class="slds-text-title_bold slds-cell-wrap">
+                              {permission.ParentName}
+                              <span class={permission.badgeCls}> {permission.type} </span>
+                            </div>
+                          </td>
+                          <td>
+                            <lightning-input type="checkbox" data-index={index} data-field="PermissionsRead"
+                              checked={permission.PermissionsRead} onchange={handleFlsChange}></lightning-input>
+                          </td>
+                          <td>
+                            <lightning-input type="checkbox" data-index={index} data-field="PermissionsEdit"
+                              checked={permission.PermissionsEdit} onchange={handleFlsChange}></lightning-input>
+                          </td>
+
+                          <!-- Status goes here -->
+                          <td if:true = {showStatus} style="width:30%;">
+                              <div class = {permission.statusCls}>
+                                  <span class = "slds-cell-wrap">{permission.status}</span>
+                              </div>
+                          </td>
+                          <!-- End Status -->
+                        </tr>
+                      </template>
+                    </tbody>
+                  </table>
+  
+                  <!-- Error Message if there are no fields for FLS -->
+                  <template if:false = {isFieldPresent}>
+                    <div class="slds-box slds-theme_info" style="margin-top:50px;">
+                        Please Select a Field for applying Field Level Permissions.
+                    </div>
+                  </template>
+                </div>
+               </div>
+              </lightning-layout-item>
+            </lightning-layout>
+          </div>
+        </div>
+  
+        <!-- Footer Buttons for Save and Review -->
+       <div class="slds-modal__footer">  
+  
+              <lightning-button icon-name="utility:close" label="Cancel" variant="destructive" onclick={closeAction}
+              style="margin-right:20px;">  
+              </lightning-button>  
+  
+              <lightning-button if:true = {showReview} variant="success" label="Review Changes"  onclick={showPreviewOfChanges}
+              style="margin-right:20px;">  
+              </lightning-button>  
+  
+              <lightning-button   if:false = {showReview} label="Back"  onclick={showPreviewOfChanges}
+              style="margin-right:20px;">  
+              </lightning-button>  
+  
+               <lightning-button icon-name="utility:save" label="Save" variant="brand" onclick={handleFieldSave}
+              style="margin-right:20px;">  
+              </lightning-button>  
+          </div>  
+      </div>
+  </div>
+</template>

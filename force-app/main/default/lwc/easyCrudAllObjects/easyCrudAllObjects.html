@@ -1,0 +1,130 @@
+<!--
+  @description       : This LWC displays all the Objects in ORG along with buttons for CRUD and FLS.
+  @author            : ravi0389@gmail.com
+  @group             : 
+  @last modified on  : 11-24-2021
+  @last modified by  : ravi0389@gmail.com
+--> 
+<template>
+  <article class="slds-card">
+    <div class="slds-is-relative" style="background: white; min-height: 500px; width: 100%">
+      
+      <!-- Header -->
+      <div class="slds-page-header">
+        <div class="slds-page-header__row">
+          <div class="slds-page-header__col-title">
+            <div class="slds-media">
+              <div class="slds-media__figure">
+                <span class="slds-icon_container slds-icon-standard-opportunity" title="easycrud">
+                  <lightning-icon slot="media" icon-name="standard:apex_plugin"></lightning-icon>
+                  <span class="slds-assistive-text"></span>
+                </span>
+              </div>
+              <div class="slds-media__body">
+                <div class="slds-page-header__name">
+                  <div class="slds-page-header__name-title">
+                    <h1>
+                      <span class="slds-page-header__title slds-truncate" title="Easy Crud and Fls">Easy Crud and
+                        FLS</span>
+                    </h1>
+                  </div>
+                </div>
+                <p class="slds-page-header__name-meta">
+                  Assign Your Permissions in Bulk !!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End Header -->
+
+      <!-- Loading Spinner -->
+      <template if:true={isLoading}>
+        <div class="slds-spinner_container">
+          <div class="slds-spinner--brand slds-spinner slds-spinner--medium slds-is-relative" role="alert">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+            <div style="
+                transform: translate(-32%, -50%) rotate(-90deg);
+                width: 320px;
+                text-align: center;
+              ">
+              <div class="slds-p-top_large">{status}</div>
+            </div>
+          </div>
+        </div>
+      </template>
+      <!-- Spinner End -->
+
+      <!-- Object Based Search -->
+      <div class="slds-m-around_large">
+        <lightning-input type="search" data-field="searchKey" label="Enter Object Name to Search.."
+          placeholder="Search .." onchange={handleObjectSearch}></lightning-input>
+      </div>
+      <!-- Search Ends Here -->
+      
+      <div class="slds-border_top slds-m-around_x-small"></div>
+     
+      <!-- All Objects-->
+      <div>
+        <table if:true={filteredObjects} class="slds-table slds-table_cell-buffer slds-table_bordered custom-table">
+          <thead>
+            <tr class="slds-line-height_reset" style="line-height: 30px">
+              <th class="slds-text-align_left" scope="col" style="width: 25%">
+                <div class="slds-truncate" title="object">
+                  Object (Api Name)
+                </div>
+              </th>
+              <th class="slds-text-align_left" scope="col" style="width: 25%">
+                <div class="slds-truncate" title="objectpermissions">
+                  Object Permissions
+                </div>
+              </th>
+              <th class="slds-text-align_left" scope="col" style="width: 25%">
+                <div class="slds-truncate" title="fieldpermissions">
+                  Field Permissions
+                </div>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <template for:each={filteredObjects} for:item="obj" for:index="index">
+              <tr key={obj.Id}>
+                <td>
+                  <div class="slds-cell-wrap">{obj.SobjectType}</div>
+                </td>
+                <td>
+                  <lightning-button label="Object Permissions" variant="brand" onclick={handleCrud}
+                    name={obj.SobjectType} icon-name="utility:sobject">
+                  </lightning-button>
+                </td>
+                <td>
+                  <lightning-button label="Field Permissions" variant="success" name={obj.SobjectType}
+                    class="slds-m-left_small" onclick={handleFls} icon-name="utility:edit">
+                  </lightning-button>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+      <!-- End All Objects -->
+
+      <!-- Object Level Crud Permissions-->
+      <template if:true={showObjectCrud}>
+        <c-easy-crud-object-permissions s-object-name={object} onclose={closeModal}>
+        </c-easy-crud-object-permissions>
+      </template>
+
+      <!-- Field Level Permissions-->
+      <template if:true={showFls}>
+        <c-easy-crud-field-permissions s-object-name={object} onclose={closeModal}>
+        </c-easy-crud-field-permissions>
+      </template>
+      
+    </div>
+  </article>
+</template>
