@@ -25,14 +25,16 @@ export default class EasyCrudAllObjects extends LightningElement {
                 let count = 1;
                 result = JSON.parse(JSON.stringify(result));
                 let allObjects = [];
+                let processedObjects = new Set();
                 for(var item of result){
-                        //If the ID starts with 000, then it is used for Salesforce Internal Purpose
-                        if(!item.Id || !item.Id.startsWith('000')){ 
+                        //Avoid Duplicate Rows
+                        if(!processedObjects.has(item.SobjectType)){ 
                                 allObjects.push(item);
                         }
+                        processedObjects.add(item.SobjectType);
                 }
                 this.allObjectsInOrg = allObjects;
-                this.filteredObjects = JSON.parse(JSON.stringify(result));
+                this.filteredObjects = JSON.parse(JSON.stringify(this.allObjectsInOrg));
                 this.isLoading = false;
                 this.status = '';
             }).catch(error => {
