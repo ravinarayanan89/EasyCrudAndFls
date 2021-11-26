@@ -31,6 +31,8 @@
                 placeholder="Search .." onchange={handleObjectSearch}></lightning-input>
             </div>
     
+            <div if:true = {showDashBoard} class="chart" lwc:dom="manual" style="width:100%;"></div>
+    
             <div class="slds-border_top slds-m-around_x-small"></div>
             <div class="slds-is-relative" style="min-height:500px;width:100%;">
               <template if:true={isLoading}>
@@ -188,8 +190,33 @@
           <!-- Footer Button for Save,Preview-->
          <div class="slds-modal__footer">  
     
+                <!-- Filter Starts here -->
+                <div class="slds-float_left" style="margin-left:30px;">
+                  <dl class="slds-list_inline">
+                    <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Filter By" style="margin-top:7px;">Filter Results By</dt>
+                    <dd class="slds-item_detail slds-truncate" title="Filter By">
+                      <select class="slds-select" name="filterSelect" onchange = {filterResults} >
+                        <template for:each = {filterOptions} for:item="option">
+                          <option key={option.label} value={option.value}
+                          selected = {option.selected}>{option.label}</option>
+                        </template>
+                      </select> 
+                     </dd> 
+                  </dl>
+                </div>
+                <!-- Filter Ends here -->
+
+
                 <lightning-button icon-name="utility:close" label="Cancel" variant="destructive" onclick={closeAction}
                 style="margin-right:20px;">  
+                </lightning-button>  
+                
+                <lightning-button if:false = {showDashBoard} variant="brand" label="Generate Chart"  onclick={generateChart}
+                style="margin-right:20px;" icon-name="utility:chart">  
+                </lightning-button>  
+
+                <lightning-button if:true = {showDashBoard} variant="brand" label="Hide Chart"  onclick={hideChart}
+                style="margin-right:20px;" icon-name="utility:chart">  
                 </lightning-button>  
     
                 <lightning-button if:true = {showReview} variant="success" label="Review Changes"  onclick={showPreviewOfChanges}

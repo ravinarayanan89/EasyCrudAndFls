@@ -3,6 +3,8 @@ import getObjectPermissions from '@salesforce/apex/EasyCrudAndFls.getObjectPermi
 import getPermissionSets from '@salesforce/apex/EasyCrudAndFls.getPermissionSets';
 import upsertPermissions from '@salesforce/apex/EasyCrudAndFls.upsertPermissions';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { loadScript, loadStyle } from 'lightning/platformResourceLoader';
+import chartjs from '@salesforce/resourceUrl/chartJs';
 
 export default class ObjectAndFieldPermissions extends LightningElement {
 
@@ -26,6 +28,20 @@ export default class ObjectAndFieldPermissions extends LightningElement {
         PermissionsRead = false;
         PermissionsModifyAllRecords = false;
         PermissionsViewAllRecords = false;
+        showDashBoard = false;
+        filterOptions = [
+            { "label" : "-- None --",value : "None" , "selected":true},
+            { "label" : "Create",value : "PermissionsCreate","selected":false},
+            { "label" : "Read",value : "PermissionsRead","selected":false},
+            { "label" : "Edit",value : "PermissionsEdit","selected":false},
+            { "label" : "Delete",value : "PermissionsDelete","selected":false},
+            { "label" : "View All",value : "PermissionsViewAllRecords","selected":false},
+            { "label" : "Modify All",value : "PermissionsModifyAllRecords","selected":false},
+            { "label" : "Profiles",value : "IsOwnedByProfile","selected":false},
+            { "label" : "Permission Sets",value : "PermissionSets","selected":false},
+        ];
+
+        selectedFilter = 'None';
 
         connectedCallback(){
                 this.showReview = true;
@@ -91,7 +107,7 @@ export default class ObjectAndFieldPermissions extends LightningElement {
                  }
                  permissionsObj.type = item.IsOwnedByProfile ? 'Profile':'Permission Set';
                  permissionsObj.badgeCls = item.IsOwnedByProfile ? 'slds-badge slds-theme_warning' : 'slds-badge slds-theme_success';
-
+                 permissionsObj.IsOwnedByProfile = item.IsOwnedByProfile;
                  permissionsToUpdate.push(permissionsObj);
 
             }
@@ -410,6 +426,130 @@ export default class ObjectAndFieldPermissions extends LightningElement {
                 this.showToast(error,'EXPORT_FAILED','error');
                 console.log('ERROR IS',error);
             }
+        }
+
+        //Filter results 
+        filterResults(event){
+            const field = event.target.name;
+            if (field === 'filterSelect') {
+                let value = event.target.value;
+                this.clearValues();
+
+                for(var item of this.modifiedcrudPermissions){
+                        if(value == 'None' || item[value]){
+                            item.isVisible = true;
+                        }
+                        else if(value == 'PermissionSets' && !item.IsOwnedByProfile){
+                            item.isVisible = true;
+                        }
+                        else{
+                            item.isVisible = false;
+                        }
+                }
+
+                this.modifiedcrudPermissions = [...this.modifiedcrudPermissions]; 
+
+            } 
+        }
+
+        generateChart(){
+
+            this.showDashBoard = true;
+
+            let dashBoardData = this.generateDataForDashboard();
+
+            Promise.all([
+                loadScript(this, chartjs)
+            ])
+            .then(() => {
+                const labels = ['Create','Read','Edit','Delete','View All','Modify All'];
+                const data = {
+                labels: labels,
+                datasets: [
+                    {
+                    label: 'Profiles',
+                    data: dashBoardData.profiles,
+                    backgroundColor: '#fe5c4c',
+                    },
+                    {
+                    label: 'Permission Sets',
+                    data: dashBoardData.permissionsets,
+                    backgroundColor: '#41b658',
+                    }
+                ]
+                };
+
+            const config = {
+                type: 'bar',
+                data: data,
+                options: {
+                  plugins: {
+                    title: {
+                      display: true,
+                      text: 'Chart.js Bar Chart - Stacked'
+                    },
+                  },
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  scales: {
+                    x: {
+                      stacked: true,
+                    },
+                    y: {
+                      stacked: true,
+                    
+                    },
+                    xAxes: [{
+                        barThickness: 100,  // number (pixels) or 'flex'
+                        maxBarThickness: 100 // number (pixels)
+                    }]
+                  }
+                }
+              };
+
+              const canvas = document.createElement('canvas');
+              canvas.setAttribute("width", "800");
+              canvas.setAttribute("height", "300");
+              this.template.querySelector('div.chart').appendChild(canvas);
+              const chartProgress = canvas;
+
+              if (chartProgress) {
+                var myChartCircle = new Chart(chartProgress, config);
+              }
+            });
+
+
+
+        }
+
+
+        generateDataForDashboard(){
+
+            let permissions = [...this.modifiedcrudPermissions];
+
+            let profiles = [];
+            profiles.push(permissions.filter(permission => permission.PermissionsCreate && permission.IsOwnedByProfile).length);
+            profiles.push(permissions.filter(permission => permission.PermissionsRead && permission.IsOwnedByProfile).length);
+            profiles.push(permissions.filter(permission => permission.PermissionsEdit && permission.IsOwnedByProfile).length);
+            profiles.push(permissions.filter(permission => permission.PermissionsDelete && permission.IsOwnedByProfile).length);
+            profiles.push(permissions.filter(permission => permission.PermissionsViewAllRecords && permission.IsOwnedByProfile).length);
+            profiles.push(permissions.filter(permission => permission.PermissionsModifyAllRecords && permission.IsOwnedByProfile).length);
+
+            let permissionSets = [];
+            permissionSets.push(permissions.filter(permission => permission.PermissionsCreate && !permission.IsOwnedByProfile).length);
+            permissionSets.push(permissions.filter(permission => permission.PermissionsRead && !permission.IsOwnedByProfile).length);
+            permissionSets.push(permissions.filter(permission => permission.PermissionsEdit && !permission.IsOwnedByProfile).length);
+            permissionSets.push(permissions.filter(permission => permission.PermissionsDelete && !permission.IsOwnedByProfile).length);
+            permissionSets.push(permissions.filter(permission => permission.PermissionsViewAllRecords && !permission.IsOwnedByProfile).length);
+            permissionSets.push(permissions.filter(permission => permission.PermissionsModifyAllRecords && !permission.IsOwnedByProfile).length);
+
+            return {"profiles":profiles,"permissionsets":permissionSets};
+
+
+        }
+
+        hideChart(event){
+            this.showDashBoard = false;
         }
 
         showToast(message,title,variant) {
