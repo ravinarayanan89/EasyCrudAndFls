@@ -17,7 +17,7 @@ This repo contains the Salesforce code components (LWC and Apex) which helps us 
 ![App preview](https://github.com/ravinarayanan89/EasyCrudAndFls/blob/main/screenshots/4.png?raw=true)
 
 # 5 Filter the Permissions
-![App preview](https://github.com/ravinarayanan89/EasyCrudAndFls/blob/main/screenshots/5.png?raw=true)
+![App preview](https://github.com/ravinarayanan89/EasyCrudAndFls/blob/main/screenshots/5.PNG?raw=true)
 
 # 6 Applying Field level Permissions
 ![App preview](https://github.com/ravinarayanan89/EasyCrudAndFls/blob/main/screenshots/6.png?raw=true)
