@@ -1,3 +1,29 @@
+# What is this REPO.
+
+This repo contains the Salesforce code components (LWC and Apex) which helps us to assign Crud Permissions to both profiles and permission sets from a single screen in BULK based on Keyword. There are also features that supports exporting the permissions , filtering based on permission sets/profiles/various crud permissions. This App also contains the features for providing FLS permissions to both profiles and permissions in bulkified Mode. 
+
+# App Screenshots. 
+
+# 1 App preview
+![App preview](https://github.com/ravinarayanan89/EasyCrudAndFls/blob/main/screenshots/1.png?raw=true)
+
+# 2 Search Based on keyword and Update your Object Permissions.  <i> Exporting Option available too </i>
+![App preview](https://github.com/ravinarayanan89/EasyCrudAndFls/blob/main/screenshots/2.png?raw=true)
+
+# 3 Exported Permissions CSV
+![App preview](https://github.com/ravinarayanan89/EasyCrudAndFls/blob/main/screenshots/3.png?raw=true)
+
+# 4 Generate Dashboard for your Object Permissions
+![App preview](https://github.com/ravinarayanan89/EasyCrudAndFls/blob/main/screenshots/4.png?raw=true)
+
+# 5 Filter the Permissions
+![App preview](https://github.com/ravinarayanan89/EasyCrudAndFls/blob/main/screenshots/5.png?raw=true)
+
+# 6 Applying Field level Permissions
+![App preview](https://github.com/ravinarayanan89/EasyCrudAndFls/blob/main/screenshots/6.png?raw=true)
+
+
+
 # How to Use This.
 
 Clone the Repository to your local machine. 
