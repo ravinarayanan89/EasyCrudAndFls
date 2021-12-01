@@ -3,7 +3,7 @@
 This repo contains the Salesforce code components (LWC and Apex) which helps us to assign Crud Permissions to both profiles and permission sets from a single screen in BULK based on Keyword. There are also features that supports exporting the permissions , filtering based on permission sets/profiles/various crud permissions. This App also contains the features for providing FLS permissions to both profiles and permissions in bulkified Mode.
 
 # In Case you are not familiar with Git Deployments , Please use the below Unmanaged Package 
-https://login.salesforce.com/packaging/installPackage.apexp?p0=04t2x000004FFrl
+https://login.salesforce.com/packaging/installPackage.apexp?p0=04t2x000004FFsK
 
 
 
