@@ -37,8 +37,9 @@ export default class ObjectAndFieldPermissions extends LightningElement {
             { "label" : "Delete",value : "PermissionsDelete","selected":false},
             { "label" : "View All",value : "PermissionsViewAllRecords","selected":false},
             { "label" : "Modify All",value : "PermissionsModifyAllRecords","selected":false},
-            { "label" : "Profiles",value : "IsOwnedByProfile","selected":false},
-            { "label" : "Permission Sets",value : "PermissionSets","selected":false},
+            { "label" : "Profiles",value : "Profile","selected":false},
+            { "label" : "Permission Sets",value : "Permission Set","selected":false},
+            {"label" : "Permission Set Groups" , "value"  : "PermissionSetGroup" , selected : false}
         ];
 
         selectedFilter = 'None';
@@ -107,6 +108,14 @@ export default class ObjectAndFieldPermissions extends LightningElement {
                  }
                  permissionsObj.type = item.IsOwnedByProfile ? 'Profile':'Permission Set';
                  permissionsObj.badgeCls = item.IsOwnedByProfile ? 'slds-badge slds-theme_warning' : 'slds-badge slds-theme_success';
+                 permissionsObj.readonly = false;
+
+                 // permission set groups cannot be edited.               
+                 if(item.Type == 'Group'){
+                    permissionsObj.type = 'PermissionSetGroup';
+                    permissionsObj.badgeCls = 'slds-badge slds-theme_error';
+                    permissionsObj.readonly = true;
+                 }
                  permissionsObj.IsOwnedByProfile = item.IsOwnedByProfile;
                  permissionsToUpdate.push(permissionsObj);
 
@@ -439,7 +448,7 @@ export default class ObjectAndFieldPermissions extends LightningElement {
                         if(value == 'None' || item[value]){
                             item.isVisible = true;
                         }
-                        else if(value == 'PermissionSets' && !item.IsOwnedByProfile){
+                        else if(item.type == value){
                             item.isVisible = true;
                         }
                         else{

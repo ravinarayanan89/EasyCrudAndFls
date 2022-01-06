@@ -30,6 +30,17 @@ export default class ObjectAndFieldPermissions extends LightningElement {
         PermissionsRead = false;
         PermissionsEdit = false;
 
+        filterOptions = [
+            { "label" : "-- None --",value : "None" , "selected":true},
+            { "label" : "Read",value : "PermissionsRead","selected":false},
+            { "label" : "Edit",value : "PermissionsEdit","selected":false},
+            { "label" : "Profiles",value : "Profile","selected":false},
+            { "label" : "Permission Sets",value : "Permission Set","selected":false},
+            {"label" : "Permission Set Groups" , "value"  : "PermissionSetGroup" , selected : false}
+        ];
+
+        selectedFilter = 'None';
+
         connectedCallback(){
                 this.showReview = true;
                 this.showStatus = false;
@@ -96,7 +107,7 @@ export default class ObjectAndFieldPermissions extends LightningElement {
         getFieldPermissionFromApex(){
             this.PermissionsRead = false;
             this.PermissionsEdit = false;
-
+            this.template.querySelector('select').value = 'None';
             getFieldPermissions({
                     "objectName" : this.sObjectName,
                     "fieldName" : this.sObjectName+'.'+this.fieldName
@@ -149,8 +160,15 @@ export default class ObjectAndFieldPermissions extends LightningElement {
                     permissionsObj.ParentName = item.Name;
                  }
                  permissionsObj.type = item.IsOwnedByProfile ? 'Profile':'Permission Set';
+                 permissionsObj.readonly = false;
                  permissionsObj.badgeCls = item.IsOwnedByProfile ? 'slds-badge slds-theme_warning' : 'slds-badge slds-theme_success';
 
+                     // permission set groups cannot be edited.               
+                     if(item.Type == 'Group'){
+                        permissionsObj.type = 'PermissionSetGroup';
+                        permissionsObj.badgeCls = 'slds-badge slds-theme_error';
+                        permissionsObj.readonly = true;
+                     }
                  permissionsToUpdate.push(permissionsObj);
 
             }
@@ -327,7 +345,7 @@ export default class ObjectAndFieldPermissions extends LightningElement {
 
             for(var item of this.modifiedFlsPermissions){
 
-                if(!item.isVisible){
+                if(!item.isVisible || item.readonly){
                         index += 1;
                         continue;
                 }
@@ -467,6 +485,35 @@ export default class ObjectAndFieldPermissions extends LightningElement {
             catch(error){
                 console.log('ERROR IS',error);
             }
+        }
+
+        
+        clearValues(){
+            this.PermissionsEdit = false;
+            this.PermissionsRead = false;
+        }
+        //Filter results 
+        filterResults(event){
+            const field = event.target.name;
+            if (field === 'filterSelect') {
+                let value = event.target.value;
+                this.clearValues();
+
+                for(var item of this.modifiedFlsPermissions){
+                        if(value == 'None' || item[value]){
+                            item.isVisible = true;
+                        }
+                        else if(item.type == value){
+                            item.isVisible = true;
+                        }
+                        else{
+                            item.isVisible = false;
+                        }
+                }
+
+                this.modifiedFlsPermissions = [...this.modifiedFlsPermissions]; 
+
+            } 
         }
 
   
