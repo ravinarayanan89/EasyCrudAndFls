@@ -2,8 +2,8 @@
   @description       : Field Permissions for the specific Object.
   @author            : ravi0389@gmail.com
   @group             : 
-  @last modified on  : 11-24-2021
-  @last modified by  : ravi0389@gmail.com
+  @last modified on  : 01-06-2022
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
 -->
 <template>
   <div class="slds-modal slds-fade-in-open slds-modal_large slds-backdrop">
@@ -150,11 +150,13 @@
                           </td>
                           <td>
                             <lightning-input type="checkbox" data-index={index} data-field="PermissionsRead"
-                              checked={permission.PermissionsRead} onchange={handleFlsChange}></lightning-input>
+                              checked={permission.PermissionsRead} onchange={handleFlsChange}
+                              disabled = {permission.readonly}></lightning-input>
                           </td>
                           <td>
                             <lightning-input type="checkbox" data-index={index} data-field="PermissionsEdit"
-                              checked={permission.PermissionsEdit} onchange={handleFlsChange}></lightning-input>
+                              checked={permission.PermissionsEdit} onchange={handleFlsChange}
+                              disabled = {permission.readonly}></lightning-input>
                           </td>
 
                           <!-- Status goes here -->
@@ -184,7 +186,22 @@
   
         <!-- Footer Buttons for Save and Review -->
        <div class="slds-modal__footer">  
-  
+        
+              <!-- Filter Starts here -->
+              <div class="slds-float_left" style="margin-left:30px;">
+                <dl class="slds-list_inline">
+                  <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Filter By" style="margin-top:7px;">Filter Results By</dt>
+                  <dd class="slds-item_detail slds-truncate" title="Filter By">
+                    <select class="slds-select" name="filterSelect" onchange = {filterResults} >
+                      <template for:each = {filterOptions} for:item="option">
+                        <option key={option.label} value={option.value}
+                        selected = {option.selected}>{option.label}</option>
+                      </template>
+                    </select> 
+                    </dd> 
+                </dl>
+              </div>
+
               <lightning-button icon-name="utility:close" label="Cancel" variant="destructive" onclick={closeAction}
               style="margin-right:20px;">  
               </lightning-button>  

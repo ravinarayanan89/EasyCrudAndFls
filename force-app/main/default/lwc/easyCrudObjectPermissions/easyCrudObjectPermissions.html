@@ -2,235 +2,241 @@
   @description       : Object Permissions for a Specific Object
   @author            : ravi0389@gmail.com
   @group             : 
-  @last modified on  : 11-24-2021
-  @last modified by  : ravi0389@gmail.com
+  @last modified on  : 01-06-2022
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
 -->
 <template>
-    <div class="slds-modal slds-fade-in-open slds-modal_large slds-backdrop">
-        <div class="slds-modal__container">
-          <!-- Header -->
-          <div class="slds-modal__header">
-            <lightning-button-icon icon-name="utility:close" alternative-text="Close this window" size="large"
-              variant="bare-inverse" onclick={closeAction} class="slds-modal__close">
-            </lightning-button-icon>
-            <h2>Object Permissions for {sObjectName}
-              <div class="slds-float--right"> 
-                  <lightning-button icon-name="utility:download" variant="brand" label="Export"
-                  onclick = {downloadCSVFile}></lightning-button>
-              </div>
-            </h2>
-          </div>
-          <!-- End Header -->
-    
-          <div class="slds-modal__content slds-p-left_medium slds-p-right_medium" 
-          style="min-height:70vh;max-height:70vh;overflow-y:auto;">
-          
-          <!-- Quick Search-->
-            <div class="slds-m-bottom_small slds-m-top_small slds-m-left_small slds-m-right_small">
-              <lightning-input type="search" data-field="searchKey" label="Enter Profile Name to Search.."
-                placeholder="Search .." onchange={handleObjectSearch}></lightning-input>
+  <div class="slds-modal slds-fade-in-open slds-modal_large slds-backdrop">
+      <div class="slds-modal__container">
+        <!-- Header -->
+        <div class="slds-modal__header">
+          <lightning-button-icon icon-name="utility:close" alternative-text="Close this window" size="large"
+            variant="bare-inverse" onclick={closeAction} class="slds-modal__close">
+          </lightning-button-icon>
+          <h2>Object Permissions for {sObjectName}
+            <div class="slds-float--right"> 
+                <lightning-button icon-name="utility:download" variant="brand" label="Export"
+                onclick = {downloadCSVFile}></lightning-button>
             </div>
-    
-            <div if:true = {showDashBoard} class="chart" lwc:dom="manual" style="width:100%;"></div>
-    
-            <div class="slds-border_top slds-m-around_x-small"></div>
-            <div class="slds-is-relative" style="min-height:500px;width:100%;">
-              <template if:true={isLoading}>
-                <div class="slds-spinner_container">
-                  <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative" role="alert">
-                    <span class="slds-assistive-text">Loading</span>
-                    <div class="slds-spinner__dot-a"></div>
-                    <div class="slds-spinner__dot-b"></div>
-                    <div style="transform: translate(-32%, -50%) rotate(-90deg);width: 320px;text-align: center;">
-                      <div class="slds-p-top_large">
-                        {status}
-                      </div>
+          </h2>
+        </div>
+        <!-- End Header -->
+  
+        <div class="slds-modal__content slds-p-left_medium slds-p-right_medium" 
+        style="min-height:70vh;max-height:70vh;overflow-y:auto;">
+        
+        <!-- Quick Search-->
+          <div class="slds-m-bottom_small slds-m-top_small slds-m-left_small slds-m-right_small">
+            <lightning-input type="search" data-field="searchKey" label="Enter Profile Name to Search.."
+              placeholder="Search .." onchange={handleObjectSearch}></lightning-input>
+          </div>
+  
+          <div if:true = {showDashBoard} class="chart" lwc:dom="manual" style="width:100%;"></div>
+  
+          <div class="slds-border_top slds-m-around_x-small"></div>
+          <div class="slds-is-relative" style="min-height:500px;width:100%;">
+            <template if:true={isLoading}>
+              <div class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative" role="alert">
+                  <span class="slds-assistive-text">Loading</span>
+                  <div class="slds-spinner__dot-a"></div>
+                  <div class="slds-spinner__dot-b"></div>
+                  <div style="transform: translate(-32%, -50%) rotate(-90deg);width: 320px;text-align: center;">
+                    <div class="slds-p-top_large">
+                      {status}
                     </div>
                   </div>
                 </div>
-              </template>
-    
-              <!-- Object CRUD Permissions -->
-              <div class="slds-m-bottom_small slds-m-top_medium slds-m-left_small slds-m-right_small">
-                <table class="slds-no-row-hover slds-table slds-table_bordered slds-border_left slds-border_right">
-                  <thead>
-                    <tr class="slds-line-height_reset" style="line-height:30px;">
-                      <th class="" scope="col" style="width:30%;">
-                        <div class="slds-cell-wrap" title="PermissionSet"> Profile/Permission Set</div>
-                      </th>
-                      <th class="" scope="col">
-                        <div class="slds-cell-wrap" title="Create">  <div class="slds-cell-wrap" title="Edit">
-                          <div class="slds-grid">
-                              <div class="slds-col">
-                                <lightning-input type="checkbox" name="PermissionsCreate" checked = {PermissionsCreate} onchange={selectAll}></lightning-input>
-                              </div>
-                              <div class="slds-col">
-                                Create
-                              </div>
-                          </div>
-                          </div></div>
-                      </th>
-                      <th class="" scope="col">
-                        <div class="slds-cell-wrap" title="Read">  <div class="slds-cell-wrap" title="Edit">
-                          <div class="slds-grid">
-                              <div class="slds-col">
-                                <lightning-input type="checkbox" name="PermissionsRead" checked = {PermissionsRead} onchange={selectAll}></lightning-input>
-                              </div>
-                              <div class="slds-col">
-                                Read
-                              </div>
-                          </div>
-                          </div></div>
-                      </th>
-                      <th class="" scope="col">
-                        <div class="slds-cell-wrap" title="Edit">  <div class="slds-cell-wrap" title="Edit">
-                          <div class="slds-grid">
-                              <div class="slds-col">
-                                <lightning-input type="checkbox" name="PermissionsEdit" checked = {PermissionsEdit} onchange={selectAll}></lightning-input>
-                              </div>
-                              <div class="slds-col">
-                                Edit
-                              </div>
-                          </div>
-                          </div></div>
-                      </th>
-                      <th class="" scope="col">
-                        <div class="slds-cell-wrap" title="Delete">  <div class="slds-cell-wrap" title="Edit">
-                          <div class="slds-grid">
-                              <div class="slds-col">
-                                <lightning-input type="checkbox" name="PermissionsDelete" checked = {PermissionsDelete} onchange={selectAll}></lightning-input>
-                              </div>
-                              <div class="slds-col">
-                                Delete
-                              </div>
-                          </div>
-                          </div></div>
-                      </th>
-                      <th class="" scope="col">
-                        <div class="slds-cell-wrap" title="Edit">
-                          <div class="slds-grid">
-                              <div class="slds-col">
-                                <lightning-input type="checkbox"  name="PermissionsViewAllRecords" checked = {PermissionsViewAllRecords}  onchange={selectAll}></lightning-input>
-                              </div>
-                              <div class="slds-col">
-                                View All
-                              </div>
-                          </div>
-                          </div>
-                      </th>
-                      <th class="" scope="col">
-                        <div class="slds-cell-wrap" title="Edit">
-                          <div class="slds-grid">
-                              <div class="slds-col">
-                                <lightning-input type="checkbox" onchange={selectAll} name="PermissionsModifyAllRecords" checked = {PermissionsModifyAllRecords} 
-                                 ></lightning-input>
-                              </div>
-                              <div class="slds-col">
-                                Modify All
-                              </div>
-                          </div>
-                          </div>
-                      </th>
-                      <th class="" scope="col" if:true = {showStatus} style="width:30%;">
-                        <div class="slds-cell-wrap" title="Modify">Status</div>
-                      </th>
-                    </tr>
-                  </thead>
-    
-                  <tbody>
-                    <template for:each={modifiedcrudPermissions} for:item="permission" for:index="index">
-    
-                      <tr if:true={permission.isVisible} class={permission.class} key={permission.ParentId}
-                        style="line-height:25px;">
-                        <td style="width:30%;">
-                          <div class="slds-text-title_bold slds-cell-wrap">
-                            {permission.ParentName}    <span class={permission.badgeCls}> {permission.type} </span>
-                          </div>
-                        </td>
-                        <td>
-                          <lightning-input type="checkbox" data-index={index} data-field="PermissionsCreate"
-                            checked={permission.PermissionsCreate} onchange={handleCrudChange}></lightning-input>
-                        </td>
-                        <td>
-                          <lightning-input type="checkbox" data-index={index} data-field="PermissionsRead"
-                            checked={permission.PermissionsRead} onchange={handleCrudChange}></lightning-input>
-                        </td>
-                        <td>
-                          <lightning-input type="checkbox" data-index={index} data-field="PermissionsEdit"
-                            checked={permission.PermissionsEdit} onchange={handleCrudChange}></lightning-input>
-                        </td>
-                        <td>
-                          <lightning-input type="checkbox" data-index={index} data-field="PermissionsDelete"
-                            checked={permission.PermissionsDelete} onchange={handleCrudChange}></lightning-input>
-                        </td>
-                        <td>
-                          <lightning-input type="checkbox" data-index={index} data-field="PermissionsViewAllRecords"
-                            checked={permission.PermissionsViewAllRecords} onchange={handleCrudChange}></lightning-input>
-                        </td>
-                        <td>
-                          <lightning-input type="checkbox" data-index={index} data-field="PermissionsModifyAllRecords"
-                            checked={permission.PermissionsModifyAllRecords} onchange={handleCrudChange}></lightning-input>
-                        </td>
-                        <!-- Status after Upsert is Completed-->
-                        <td if:true = {showStatus} style="width:30%;">
-                            <div class = {permission.statusCls}>
-                                <span class = "slds-cell-wrap">{permission.status}</span>
-                            </div>
-                        </td>
-                        <!-- End Status -->
-                      </tr>
-                    </template>
-                  </tbody>
-                </table>
               </div>
+            </template>
+  
+            <!-- Object CRUD Permissions -->
+            <div class="slds-m-bottom_small slds-m-top_medium slds-m-left_small slds-m-right_small">
+              <table class="slds-no-row-hover slds-table slds-table_bordered slds-border_left slds-border_right">
+                <thead>
+                  <tr class="slds-line-height_reset" style="line-height:30px;">
+                    <th class="" scope="col" style="width:30%;">
+                      <div class="slds-cell-wrap" title="PermissionSet"> Profile/Permission Set</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-cell-wrap" title="Create">  <div class="slds-cell-wrap" title="Edit">
+                        <div class="slds-grid">
+                            <div class="slds-col">
+                              <lightning-input type="checkbox" name="PermissionsCreate" checked = {PermissionsCreate} onchange={selectAll}></lightning-input>
+                            </div>
+                            <div class="slds-col">
+                              Create
+                            </div>
+                        </div>
+                        </div></div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-cell-wrap" title="Read">  <div class="slds-cell-wrap" title="Edit">
+                        <div class="slds-grid">
+                            <div class="slds-col">
+                              <lightning-input type="checkbox" name="PermissionsRead" checked = {PermissionsRead} onchange={selectAll}></lightning-input>
+                            </div>
+                            <div class="slds-col">
+                              Read
+                            </div>
+                        </div>
+                        </div></div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-cell-wrap" title="Edit">  <div class="slds-cell-wrap" title="Edit">
+                        <div class="slds-grid">
+                            <div class="slds-col">
+                              <lightning-input type="checkbox" name="PermissionsEdit" checked = {PermissionsEdit} onchange={selectAll}></lightning-input>
+                            </div>
+                            <div class="slds-col">
+                              Edit
+                            </div>
+                        </div>
+                        </div></div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-cell-wrap" title="Delete">  <div class="slds-cell-wrap" title="Edit">
+                        <div class="slds-grid">
+                            <div class="slds-col">
+                              <lightning-input type="checkbox" name="PermissionsDelete" checked = {PermissionsDelete} onchange={selectAll}></lightning-input>
+                            </div>
+                            <div class="slds-col">
+                              Delete
+                            </div>
+                        </div>
+                        </div></div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-cell-wrap" title="Edit">
+                        <div class="slds-grid">
+                            <div class="slds-col">
+                              <lightning-input type="checkbox"  name="PermissionsViewAllRecords" checked = {PermissionsViewAllRecords}  onchange={selectAll}></lightning-input>
+                            </div>
+                            <div class="slds-col">
+                              View All
+                            </div>
+                        </div>
+                        </div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-cell-wrap" title="Edit">
+                        <div class="slds-grid">
+                            <div class="slds-col">
+                              <lightning-input type="checkbox" onchange={selectAll} name="PermissionsModifyAllRecords" checked = {PermissionsModifyAllRecords} 
+                               ></lightning-input>
+                            </div>
+                            <div class="slds-col">
+                              Modify All
+                            </div>
+                        </div>
+                        </div>
+                    </th>
+                    <th class="" scope="col" if:true = {showStatus} style="width:30%;">
+                      <div class="slds-cell-wrap" title="Modify">Status</div>
+                    </th>
+                  </tr>
+                </thead>
+  
+                <tbody>
+                  <template for:each={modifiedcrudPermissions} for:item="permission" for:index="index">
+  
+                    <tr if:true={permission.isVisible} class={permission.class} key={permission.ParentId}
+                      style="line-height:25px;">
+                      <td style="width:30%;">
+                        <div class="slds-text-title_bold slds-cell-wrap">
+                          {permission.ParentName}    <span class={permission.badgeCls}> {permission.type} </span>
+                        </div>
+                      </td>
+                      <td>
+                        <lightning-input type="checkbox" data-index={index} data-field="PermissionsCreate"
+                          checked={permission.PermissionsCreate} onchange={handleCrudChange}
+                          disabled = {permission.readonly}></lightning-input>
+                      </td>
+                      <td>
+                        <lightning-input type="checkbox" data-index={index} data-field="PermissionsRead"
+                          checked={permission.PermissionsRead} onchange={handleCrudChange}
+                          disabled = {permission.readonly}></lightning-input>
+                      </td>
+                      <td>
+                        <lightning-input type="checkbox" data-index={index} data-field="PermissionsEdit"
+                          checked={permission.PermissionsEdit} onchange={handleCrudChange}
+                          disabled = {permission.readonly}></lightning-input>
+                      </td>
+                      <td>
+                        <lightning-input type="checkbox" data-index={index} data-field="PermissionsDelete"
+                          checked={permission.PermissionsDelete} onchange={handleCrudChange}
+                          disabled = {permission.readonly}></lightning-input>
+                      </td>
+                      <td>
+                        <lightning-input type="checkbox" data-index={index} data-field="PermissionsViewAllRecords"
+                          checked={permission.PermissionsViewAllRecords} onchange={handleCrudChange}
+                          disabled = {permission.readonly}></lightning-input>
+                      </td>
+                      <td>
+                        <lightning-input type="checkbox" data-index={index} data-field="PermissionsModifyAllRecords"
+                          checked={permission.PermissionsModifyAllRecords} onchange={handleCrudChange}
+                          disabled = {permission.readonly}></lightning-input>
+                      </td>
+                      <!-- Status after Upsert is Completed-->
+                      <td if:true = {showStatus} style="width:30%;">
+                          <div class = {permission.statusCls}>
+                              <span class = "slds-cell-wrap">{permission.status}</span>
+                          </div>
+                      </td>
+                      <!-- End Status -->
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
             </div>
           </div>
-    
-
-          <!-- Footer Button for Save,Preview-->
-         <div class="slds-modal__footer">  
-    
-                <!-- Filter Starts here -->
-                <div class="slds-float_left" style="margin-left:30px;">
-                  <dl class="slds-list_inline">
-                    <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Filter By" style="margin-top:7px;">Filter Results By</dt>
-                    <dd class="slds-item_detail slds-truncate" title="Filter By">
-                      <select class="slds-select" name="filterSelect" onchange = {filterResults} >
-                        <template for:each = {filterOptions} for:item="option">
-                          <option key={option.label} value={option.value}
-                          selected = {option.selected}>{option.label}</option>
-                        </template>
-                      </select> 
-                     </dd> 
-                  </dl>
-                </div>
-                <!-- Filter Ends here -->
-
-
-                <lightning-button icon-name="utility:close" label="Cancel" variant="destructive" onclick={closeAction}
-                style="margin-right:20px;">  
-                </lightning-button>  
-                
-                <lightning-button if:false = {showDashBoard} variant="brand" label="Generate Chart"  onclick={generateChart}
-                style="margin-right:20px;" icon-name="utility:chart">  
-                </lightning-button>  
-
-                <lightning-button if:true = {showDashBoard} variant="brand" label="Hide Chart"  onclick={hideChart}
-                style="margin-right:20px;" icon-name="utility:chart">  
-                </lightning-button>  
-    
-                <lightning-button if:true = {showReview} variant="success" label="Review Changes"  onclick={showPreviewOfChanges}
-                style="margin-right:20px;">  
-                </lightning-button>  
-    
-                <lightning-button   if:false = {showReview} label="Back"  onclick={showPreviewOfChanges}
-                style="margin-right:20px;">  
-                </lightning-button>  
-    
-                 <lightning-button icon-name="utility:save" label="Save" variant="brand" onclick={handleCrudSave}
-                style="margin-right:20px;">  
-                </lightning-button>  
-            </div>  
         </div>
+  
+
+        <!-- Footer Button for Save,Preview-->
+       <div class="slds-modal__footer">  
+  
+              <!-- Filter Starts here -->
+              <div class="slds-float_left" style="margin-left:30px;">
+                <dl class="slds-list_inline">
+                  <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Filter By" style="margin-top:7px;">Filter Results By</dt>
+                  <dd class="slds-item_detail slds-truncate" title="Filter By">
+                    <select class="slds-select" name="filterSelect" onchange = {filterResults} >
+                      <template for:each = {filterOptions} for:item="option">
+                        <option key={option.label} value={option.value}
+                        selected = {option.selected}>{option.label}</option>
+                      </template>
+                    </select> 
+                   </dd> 
+                </dl>
+              </div>
+              <!-- Filter Ends here -->
+
+
+              <lightning-button icon-name="utility:close" label="Cancel" variant="destructive" onclick={closeAction}
+              style="margin-right:20px;">  
+              </lightning-button>  
+              
+              <lightning-button if:false = {showDashBoard} variant="brand" label="Generate Chart"  onclick={generateChart}
+              style="margin-right:20px;" icon-name="utility:chart">  
+              </lightning-button>  
+
+              <lightning-button if:true = {showDashBoard} variant="brand" label="Hide Chart"  onclick={hideChart}
+              style="margin-right:20px;" icon-name="utility:chart">  
+              </lightning-button>  
+  
+              <lightning-button if:true = {showReview} variant="success" label="Review Changes"  onclick={showPreviewOfChanges}
+              style="margin-right:20px;">  
+              </lightning-button>  
+  
+              <lightning-button   if:false = {showReview} label="Back"  onclick={showPreviewOfChanges}
+              style="margin-right:20px;">  
+              </lightning-button>  
+  
+               <lightning-button icon-name="utility:save" label="Save" variant="brand" onclick={handleCrudSave}
+              style="margin-right:20px;">  
+              </lightning-button>  
+          </div>  
       </div>
+    </div>
 </template>

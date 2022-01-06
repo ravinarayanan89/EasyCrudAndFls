@@ -2,8 +2,8 @@
  * @description       : Bulkification of CRUD and FLS.This class upserts the object and field level permissions.
  * @author            : ravi0389@gmail.com
  * @group             : 
- * @last modified on  : 25-11-2021
- * @last modified by  : ravi0389@gmail.com
+ * @last modified on  : 01-06-2022
+ * @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
  * PermissionSet Field Reference Guide
  * https://developer.salesforce.com/docs/atlas.en-us.sfFieldRef.meta/sfFieldRef/salesforce_field_reference_PermissionSet.htm
  * ObjectPermissions
@@ -16,7 +16,7 @@ public with sharing class EasyCrudAndFls {
     //get all the profiles and permission sets in org. Profiles and Permission Sets are differentiated using isOwnedByProfile
     @AuraEnabled
     public static List<PermissionSet> getPermissionSets(){
-            return [Select id,Profile.Id,Profile.Name,IsOwnedByProfile,Name FROM PermissionSet where NameSpacePrefix = NULL ORDER BY IsOwnedByProfile DESC];
+            return [Select id,Type,Profile.Id,Profile.Name,IsOwnedByProfile,Name FROM PermissionSet where NameSpacePrefix = NULL ORDER BY IsOwnedByProfile DESC];
     }
 
         
